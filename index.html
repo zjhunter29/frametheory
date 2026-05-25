@@ -213,9 +213,7 @@
     .logo-img {
       display: block;
       object-fit: contain;
-      filter: url(#logo-key) drop-shadow(0 0 12px rgba(139,92,246,0.35));
     }
-    .logo-img.no-glow { filter: none; }
 
     /* ============================================================
        REVEAL
@@ -619,7 +617,7 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 14px rgba(139,92,246,0.22);
       flex-shrink: 0;
     }
-    .ne-logo-box img { width: 28px; height: 28px; filter: url(#logo-key); }
+    .ne-logo-box img { width: 28px; height: 28px; }
     .ne-titles { min-width: 0; }
     .ne-title {
       font-family: var(--ff-head);
@@ -1263,7 +1261,6 @@
     .cta-logo-img {
       width: clamp(150px, 22vw, 240px);
       height: auto;
-      filter: url(#logo-key) drop-shadow(0 0 50px rgba(139,92,246,0.55));
       animation: float-soft 6s ease-in-out infinite;
       position: relative;
       z-index: 2;
@@ -1401,19 +1398,6 @@
   </style>
 </head>
 <body>
-
-<!-- SVG FILTER: keys out the logo PNG's dark background to transparent.
-     feColorMatrix sums RGB into alpha; feComponentTransfer crushes dim
-     pixels to 0 and amplifies the rest to fully opaque, giving a clean
-     cutout that works no matter how (im)pure the PNG's black is. -->
-<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
-  <defs>
-    <filter id="logo-key" color-interpolation-filters="sRGB">
-      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0"/>
-      <feComponentTransfer><feFuncA type="linear" slope="4" intercept="-0.3"/></feComponentTransfer>
-    </filter>
-  </defs>
-</svg>
 
 <!-- AMBIENT BACKGROUND -->
 <div class="ambient" aria-hidden="true">
