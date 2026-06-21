@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#15151a"/>
+      <stop offset="100%" stop-color="#08080b"/>
+    </linearGradient>
+    <radialGradient id="flare" cx="0.5" cy="0.5" r="0.4">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <ellipse cx="400" cy="250" rx="220" ry="160" fill="url(#flare)"/>
+  <g transform="translate(400 230)" fill="none" stroke="rgba(245,158,11,0.55)" stroke-width="2">
+    <circle r="58"/>
+    <circle r="38"/>
+    <circle r="20"/>
+    <circle cx="0" cy="0" r="6" fill="rgba(253,230,138,0.85)" stroke="none"/>
+  </g>
+  <text x="400" y="360" text-anchor="middle"
+        font-family="'Outfit', system-ui, sans-serif"
+        font-size="22" font-weight="600"
+        letter-spacing="6" fill="rgba(245,245,247,0.65)">
+    PLUGIN IMAGE
+  </text>
+  <text x="400" y="390" text-anchor="middle"
+        font-family="'Plus Jakarta Sans', system-ui, sans-serif"
+        font-size="12" font-weight="500"
+        letter-spacing="2" fill="rgba(245,245,247,0.32)">
+    Drop plugin{id}.png into /Plugin Display Images/
+  </text>
+</svg>

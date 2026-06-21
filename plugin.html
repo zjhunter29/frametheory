@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#050507"/>
+  <title>Plugin — FrameTheory</title>
+
+  <link rel="icon" type="image/png" href="frametheory-logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/styles.css"/>
+</head>
+<body>
+
+<section class="detail-hero" id="detail-root"></section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="features-grid" id="detail-features"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="center reveal">
+      <span class="eyebrow">Frequently Asked</span>
+      <h2 class="h2">Quick <span class="accent">answers.</span></h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat reveal d1">
+        <div class="feat-title">Is this a one-time purchase?</div>
+        <p class="feat-desc">Yes. Buy once, own it forever. All future updates within the major version are included.</p>
+      </div>
+      <div class="feat reveal d2">
+        <div class="feat-title">Which apps does it support?</div>
+        <p class="feat-desc">Adobe Premiere Pro is the primary host. Specific compatibility is listed in each plugin's notes.</p>
+      </div>
+      <div class="feat reveal d3">
+        <div class="feat-title">How does support work?</div>
+        <p class="feat-desc">Email support with real humans. Bug reports are triaged within 24 hours on business days.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile sticky purchase bar (filled by script) -->
+<div class="sticky-buy" id="sticky-buy"></div>
+
+<script src="assets/data/plugins.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  FT.initPage('plugins');
+
+  // Parse ?id= from URL
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'), 10);
+  const plugin = PLUGINS.find(p => p.id === id);
+
+  const root = document.getElementById('detail-root');
+
+  if (!plugin) {
+    root.innerHTML = `
+      <div class="wrap">
+        <div class="empty">
+          <b>Plugin not found.</b>
+          The requested plugin doesn't exist or has been removed.
+          <div style="margin-top:18px;">
+            <a class="btn-primary" href="plugins.html">Browse all plugins</a>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    document.title = `${plugin.name} — FrameTheory`;
+    const buyDisabled = !FT.hasPayhip(plugin);
+    const buyHTML = buyDisabled
+      ? `<span class="btn-cta disabled" aria-disabled="true" style="background:rgba(255,255,255,0.06);color:var(--txt-dim);box-shadow:none;cursor:not-allowed;">Buy Now — link coming soon</span>`
+      : `<a class="btn-cta" href="${plugin.payhipLink}" target="_blank" rel="noopener noreferrer">Buy Now
+           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+         </a>`;
+
+    const released = new Date(plugin.released).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+
+    root.innerHTML = `
+      <div class="wrap">
+        <div class="detail-grid">
+          <div class="detail-media reveal">
+            <img src="${FT.pluginImageSrc(plugin)}" alt="${plugin.name}"
+                 onerror="this.onerror=null;this.src='${FT.pluginImageFallback()}'"/>
+          </div>
+          <div class="detail-info reveal d1">
+            <span class="detail-cat">${plugin.category}</span>
+            <h1 class="detail-h1">${plugin.name}</h1>
+            <p class="detail-tag">${plugin.tagline}</p>
+            <p class="detail-desc">${plugin.description}</p>
+            <div class="detail-meta-row">
+              <div><span>Version</span><b>v${plugin.version}</b></div>
+              <div><span>Released</span><b>${released}</b></div>
+              <div><span>Rating</span><b>★ ${plugin.rating.toFixed(1)} <span style="color:var(--txt-dim);font-size:13px;font-weight:500;">(${plugin.reviews})</span></b></div>
+            </div>
+            <div class="detail-purchase">
+              <span class="detail-price">${plugin.price}</span>
+              ${buyHTML}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Feature cards
+    const featSection = document.getElementById('detail-features');
+    featSection.innerHTML = (plugin.features || []).map((f, i) => `
+      <div class="feat reveal d${(i % 6) + 1}">
+        <div class="feat-ic">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,10 8,14 16,6"/></svg>
+        </div>
+        <div class="feat-title">${f}</div>
+      </div>
+    `).join('');
+
+    // Mobile sticky purchase bar
+    document.getElementById('sticky-buy').innerHTML = `
+      <div>
+        <div class="sticky-buy-name">${plugin.name}</div>
+        <div class="sticky-buy-price">${plugin.price}</div>
+      </div>
+      ${buyDisabled
+        ? `<span class="btn-primary disabled" aria-disabled="true">Coming soon</span>`
+        : `<a class="btn-primary" href="${plugin.payhipLink}" target="_blank" rel="noopener noreferrer">Buy Now</a>`}
+    `;
+
+    // Reveal observer for newly injected
+    document.querySelectorAll('.reveal').forEach(el => {
+      new IntersectionObserver((es, obs) => {
+        es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1 }).observe(el);
+    });
+  }
+</script>
+</body>
+</html>

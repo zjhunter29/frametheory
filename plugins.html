@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#050507"/>
+  <title>Plugins — FrameTheory</title>
+  <meta name="description" content="Browse the full FrameTheory plugin catalog. Color, audio, design, AI, and utilities for modern editors."/>
+
+  <link rel="icon" type="image/png" href="frametheory-logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/styles.css"/>
+</head>
+<body>
+
+<section class="detail-hero">
+  <div class="wrap">
+    <div class="center reveal" style="margin-bottom: 8px;">
+      <span class="eyebrow">Plugin Catalog</span>
+      <h1 class="h2" style="font-size: clamp(36px, 5vw, 64px);">
+        Every plugin we ship,<br/><span class="accent">in one place.</span>
+      </h1>
+      <p class="h-sub">Filter by category, search by name or keyword, or open a plugin to see what it does.</p>
+    </div>
+
+    <div class="toolbar reveal d1">
+      <div class="search">
+        <span class="search-ic">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        </span>
+        <input id="catalog-search" type="search" placeholder="Search plugins by name, keyword, or category…" autocomplete="off"/>
+      </div>
+      <div class="toolbar-meta">
+        Showing <b id="catalog-count">0</b> plugins
+      </div>
+    </div>
+
+    <div class="chips reveal d2" id="catalog-chips"></div>
+  </div>
+</section>
+
+<section class="section-tight" style="padding-top: 30px;">
+  <div class="wrap">
+    <div class="plugin-grid" id="catalog-grid"></div>
+    <div class="empty" id="catalog-empty" style="display:none;">
+      <b>No plugins match your search.</b>
+      Try a different keyword or clear the category filter.
+    </div>
+  </div>
+</section>
+
+<script src="assets/data/plugins.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  FT.initPage('plugins');
+
+  // Build category chips
+  const chipsEl = document.getElementById('catalog-chips');
+  const chipNames = ['All', ...CATEGORIES];
+  let activeCat = 'All';
+  let query = '';
+
+  function renderChips() {
+    chipsEl.innerHTML = chipNames.map(name =>
+      `<button class="chip ${name === activeCat ? 'active' : ''}" data-cat="${name}">${name}</button>`
+    ).join('');
+    chipsEl.querySelectorAll('.chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCat = btn.dataset.cat;
+        renderChips();
+        renderGrid();
+      });
+    });
+  }
+
+  function filterPlugins() {
+    const q = query.trim().toLowerCase();
+    return PLUGINS.filter(p => {
+      if (activeCat !== 'All' && p.category !== activeCat) return false;
+      if (!q) return true;
+      return (
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.tagline.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      );
+    });
+  }
+
+  function renderGrid() {
+    const list = filterPlugins();
+    const grid = document.getElementById('catalog-grid');
+    const empty = document.getElementById('catalog-empty');
+    document.getElementById('catalog-count').textContent = list.length;
+    if (list.length === 0) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    grid.innerHTML = list.map(FT.pluginCardHTML).join('');
+    grid.querySelectorAll('.plug-card.reveal').forEach(el => el.classList.add('on'));
+  }
+
+  document.getElementById('catalog-search').addEventListener('input', (e) => {
+    query = e.target.value;
+    renderGrid();
+  });
+
+  renderChips();
+  renderGrid();
+</script>
+</body>
+</html>

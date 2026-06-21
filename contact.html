@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#050507"/>
+  <title>Contact — FrameTheory</title>
+  <meta name="description" content="Get in touch with the FrameTheory team. Support, partnerships, press, and anything else."/>
+
+  <link rel="icon" type="image/png" href="frametheory-logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/styles.css"/>
+</head>
+<body>
+
+<section class="detail-hero">
+  <div class="wrap">
+    <div class="reveal" style="max-width: 720px;">
+      <span class="eyebrow">Get in touch</span>
+      <h1 class="h2" style="font-size: clamp(36px, 5vw, 64px);">
+        Questions? Ideas? <span class="accent">Bug reports?</span>
+      </h1>
+      <p class="h-sub" style="font-size: 17px;">
+        We read every message. Drop a note and we'll get back to you within one business day.
+      </p>
+    </div>
+
+    <div class="contact-grid">
+
+      <form class="form-card reveal d1" id="contact-form" onsubmit="handleSubmit(event)">
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input id="cf-name" type="text" required autocomplete="name" placeholder="Your name"/>
+        </div>
+        <div class="field">
+          <label for="cf-email">Email</label>
+          <input id="cf-email" type="email" required autocomplete="email" placeholder="you@studio.com"/>
+        </div>
+        <div class="field">
+          <label for="cf-topic">Topic</label>
+          <select id="cf-topic">
+            <option value="Support">Support / Bug Report</option>
+            <option value="Sales">Sales / Licensing</option>
+            <option value="Partnerships">Partnerships</option>
+            <option value="Press">Press</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" required placeholder="Tell us what's on your mind…"></textarea>
+        </div>
+        <button class="btn-primary" type="submit" style="width: 100%; justify-content: center;">
+          Send Message
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l10-5-3 12-3-5-4-2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
+
+      <aside class="info-card reveal d2">
+        <div class="info-block">
+          <div class="info-block-label">Email</div>
+          <div class="info-block-value"><a href="mailto:hello@frametheory.com">hello@frametheory.com</a></div>
+        </div>
+        <div class="info-block">
+          <div class="info-block-label">Support</div>
+          <div class="info-block-value"><a href="mailto:support@frametheory.com">support@frametheory.com</a></div>
+        </div>
+        <div class="info-block">
+          <div class="info-block-label">Response Time</div>
+          <div class="info-block-value">Within 24 hours on business days</div>
+        </div>
+        <div class="info-block">
+          <div class="info-block-label">Follow Along</div>
+          <div class="info-block-value">
+            <a href="https://www.youtube.com/@NexaMotionElite" target="_blank" rel="noopener">YouTube</a>
+            &nbsp;·&nbsp;
+            <a href="https://www.instagram.com/zhs.films/" target="_blank" rel="noopener">Instagram</a>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+<script src="assets/data/plugins.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  FT.initPage('contact');
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const name    = document.getElementById('cf-name').value;
+    const email   = document.getElementById('cf-email').value;
+    const topic   = document.getElementById('cf-topic').value;
+    const message = document.getElementById('cf-message').value;
+
+    const body = `From: ${name} <${email}>\nTopic: ${topic}\n\n${message}`;
+    const mailto = `mailto:hello@frametheory.com?subject=${encodeURIComponent('['+topic+'] From '+name)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+  }
+</script>
+</body>
+</html>

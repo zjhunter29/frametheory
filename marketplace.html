@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#050507"/>
+  <title>Marketplace — FrameTheory</title>
+  <meta name="description" content="Search, filter, and sort the FrameTheory plugin marketplace. Find the right tool for your timeline."/>
+
+  <link rel="icon" type="image/png" href="frametheory-logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/styles.css"/>
+</head>
+<body>
+
+<section class="detail-hero">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Marketplace</span>
+      <h1 class="h2" style="font-size: clamp(36px, 5vw, 56px);">
+        Find your next <span class="accent">favorite plugin.</span>
+      </h1>
+      <p class="h-sub" style="max-width: 640px;">
+        A professional storefront for our growing software library. Search, filter,
+        sort — and buy directly through your preferred checkout.
+      </p>
+    </div>
+
+    <div class="toolbar reveal d1">
+      <div class="search">
+        <span class="search-ic">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        </span>
+        <input id="m-search" type="search" placeholder="Search plugins…" autocomplete="off"/>
+      </div>
+      <div class="select">
+        <select id="m-sort">
+          <option value="newest">Newest</option>
+          <option value="popular">Most Popular</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="alpha">Alphabetical</option>
+        </select>
+      </div>
+      <div class="toolbar-meta">
+        <b id="m-count">0</b> of <b id="m-total">0</b> plugins
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight" style="padding-top: 24px;">
+  <div class="wrap">
+    <div class="market-layout">
+
+      <!-- FILTERS -->
+      <aside class="filter-aside reveal">
+        <div class="filter-group">
+          <div class="filter-label">Category</div>
+          <div class="filter-list" id="m-categories"></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Price</div>
+          <div class="filter-list">
+            <label><input type="radio" name="price" value="all" checked/> All prices</label>
+            <label><input type="radio" name="price" value="under25"/> Under $25</label>
+            <label><input type="radio" name="price" value="25to50"/> $25 – $50</label>
+            <label><input type="radio" name="price" value="over50"/> $50+</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Status</div>
+          <div class="filter-list">
+            <label><input type="checkbox" id="m-featured-only"/> Featured only</label>
+            <label><input type="checkbox" id="m-new-only"/> New releases (60d)</label>
+          </div>
+        </div>
+
+        <button class="btn-ghost" id="m-reset" style="width: 100%; justify-content: center; margin-top: 8px;">
+          Reset filters
+        </button>
+      </aside>
+
+      <!-- GRID -->
+      <div>
+        <div class="plugin-grid" id="m-grid"></div>
+        <div class="empty" id="m-empty" style="display:none;">
+          <b>No matches.</b>
+          Try clearing some filters, or search a different keyword.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script src="assets/data/plugins.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  FT.initPage('marketplace');
+
+  document.getElementById('m-total').textContent = PLUGINS.length;
+
+  // Category checkboxes
+  const catsEl = document.getElementById('m-categories');
+  catsEl.innerHTML = CATEGORIES.map(c =>
+    `<label><input type="checkbox" name="cat" value="${c}"/> ${c}</label>`
+  ).join('');
+
+  function priceNum(p) {
+    return parseFloat(String(p.price).replace(/[^0-9.]/g, ''));
+  }
+  function daysAgo(p) {
+    return (Date.now() - new Date(p.released).getTime()) / 86400000;
+  }
+
+  function getFilters() {
+    const cats = [...document.querySelectorAll('input[name="cat"]:checked')].map(i => i.value);
+    const price = document.querySelector('input[name="price"]:checked').value;
+    const featuredOnly = document.getElementById('m-featured-only').checked;
+    const newOnly = document.getElementById('m-new-only').checked;
+    return { cats, price, featuredOnly, newOnly };
+  }
+
+  function apply() {
+    const q = document.getElementById('m-search').value.trim().toLowerCase();
+    const { cats, price, featuredOnly, newOnly } = getFilters();
+    const sort = document.getElementById('m-sort').value;
+
+    let list = PLUGINS.filter(p => {
+      if (cats.length && !cats.includes(p.category)) return false;
+      if (featuredOnly && !p.featured) return false;
+      if (newOnly && daysAgo(p) > 60) return false;
+      const n = priceNum(p);
+      if (price === 'under25' && !(n < 25)) return false;
+      if (price === '25to50' && !(n >= 25 && n <= 50)) return false;
+      if (price === 'over50' && !(n > 50)) return false;
+      if (q) {
+        const blob = `${p.name} ${p.description} ${p.tagline} ${p.category}`.toLowerCase();
+        if (!blob.includes(q)) return false;
+      }
+      return true;
+    });
+
+    if (sort === 'newest')     list.sort((a,b) => new Date(b.released) - new Date(a.released));
+    if (sort === 'popular')    list.sort((a,b) => b.reviews - a.reviews);
+    if (sort === 'price-asc')  list.sort((a,b) => priceNum(a) - priceNum(b));
+    if (sort === 'price-desc') list.sort((a,b) => priceNum(b) - priceNum(a));
+    if (sort === 'alpha')      list.sort((a,b) => a.name.localeCompare(b.name));
+
+    document.getElementById('m-count').textContent = list.length;
+    const grid  = document.getElementById('m-grid');
+    const empty = document.getElementById('m-empty');
+    if (!list.length) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      grid.innerHTML = list.map(FT.pluginCardHTML).join('');
+      grid.querySelectorAll('.plug-card.reveal').forEach(el => el.classList.add('on'));
+    }
+  }
+
+  ['m-search', 'm-sort', 'm-featured-only', 'm-new-only'].forEach(id => {
+    document.getElementById(id).addEventListener('input', apply);
+    document.getElementById(id).addEventListener('change', apply);
+  });
+  document.querySelectorAll('input[name="cat"], input[name="price"]').forEach(el => {
+    el.addEventListener('change', apply);
+  });
+  document.getElementById('m-reset').addEventListener('click', () => {
+    document.getElementById('m-search').value = '';
+    document.getElementById('m-sort').value = 'newest';
+    document.getElementById('m-featured-only').checked = false;
+    document.getElementById('m-new-only').checked = false;
+    document.querySelectorAll('input[name="cat"]').forEach(i => i.checked = false);
+    document.querySelector('input[name="price"][value="all"]').checked = true;
+    apply();
+  });
+
+  apply();
+</script>
+</body>
+</html>
