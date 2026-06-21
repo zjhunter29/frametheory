@@ -31,7 +31,6 @@ function pluginCardHTML(p) {
   return `
     <article class="plug-card reveal">
       <div class="plug-image">
-        <span class="plug-cat">${p.category}</span>
         <span class="plug-ver">v${p.version}</span>
         <img src="${pluginImageSrc(p)}"
              alt="${p.name}"
@@ -43,7 +42,6 @@ function pluginCardHTML(p) {
         <p class="plug-desc">${p.description}</p>
         <div class="plug-meta">
           <span class="plug-price">${p.price}</span>
-          <span class="plug-rating"><span class="star">★</span> ${p.rating.toFixed(1)} <span style="color:var(--txt-dim)">(${p.reviews})</span></span>
         </div>
       </div>
       <div class="plug-actions">

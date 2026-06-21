@@ -58,11 +58,6 @@
       <!-- FILTERS -->
       <aside class="filter-aside reveal">
         <div class="filter-group">
-          <div class="filter-label">Category</div>
-          <div class="filter-list" id="m-categories"></div>
-        </div>
-
-        <div class="filter-group">
           <div class="filter-label">Price</div>
           <div class="filter-list">
             <label><input type="radio" name="price" value="all" checked/> All prices</label>
@@ -105,12 +100,6 @@
 
   document.getElementById('m-total').textContent = PLUGINS.length;
 
-  // Category checkboxes
-  const catsEl = document.getElementById('m-categories');
-  catsEl.innerHTML = CATEGORIES.map(c =>
-    `<label><input type="checkbox" name="cat" value="${c}"/> ${c}</label>`
-  ).join('');
-
   function priceNum(p) {
     return parseFloat(String(p.price).replace(/[^0-9.]/g, ''));
   }
@@ -119,20 +108,18 @@
   }
 
   function getFilters() {
-    const cats = [...document.querySelectorAll('input[name="cat"]:checked')].map(i => i.value);
     const price = document.querySelector('input[name="price"]:checked').value;
     const featuredOnly = document.getElementById('m-featured-only').checked;
     const newOnly = document.getElementById('m-new-only').checked;
-    return { cats, price, featuredOnly, newOnly };
+    return { price, featuredOnly, newOnly };
   }
 
   function apply() {
     const q = document.getElementById('m-search').value.trim().toLowerCase();
-    const { cats, price, featuredOnly, newOnly } = getFilters();
+    const { price, featuredOnly, newOnly } = getFilters();
     const sort = document.getElementById('m-sort').value;
 
     let list = PLUGINS.filter(p => {
-      if (cats.length && !cats.includes(p.category)) return false;
       if (featuredOnly && !p.featured) return false;
       if (newOnly && daysAgo(p) > 60) return false;
       const n = priceNum(p);
@@ -169,7 +156,7 @@
     document.getElementById(id).addEventListener('input', apply);
     document.getElementById(id).addEventListener('change', apply);
   });
-  document.querySelectorAll('input[name="cat"], input[name="price"]').forEach(el => {
+  document.querySelectorAll('input[name="price"]').forEach(el => {
     el.addEventListener('change', apply);
   });
   document.getElementById('m-reset').addEventListener('click', () => {
@@ -177,7 +164,6 @@
     document.getElementById('m-sort').value = 'newest';
     document.getElementById('m-featured-only').checked = false;
     document.getElementById('m-new-only').checked = false;
-    document.querySelectorAll('input[name="cat"]').forEach(i => i.checked = false);
     document.querySelector('input[name="price"][value="all"]').checked = true;
     apply();
   });

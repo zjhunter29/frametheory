@@ -30,14 +30,12 @@
         <span class="search-ic">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
         </span>
-        <input id="catalog-search" type="search" placeholder="Search plugins by name, keyword, or category…" autocomplete="off"/>
+        <input id="catalog-search" type="search" placeholder="Search plugins by name or keyword…" autocomplete="off"/>
       </div>
       <div class="toolbar-meta">
         Showing <b id="catalog-count">0</b> plugins
       </div>
     </div>
-
-    <div class="chips reveal d2" id="catalog-chips"></div>
   </div>
 </section>
 
@@ -46,7 +44,7 @@
     <div class="plugin-grid" id="catalog-grid"></div>
     <div class="empty" id="catalog-empty" style="display:none;">
       <b>No plugins match your search.</b>
-      Try a different keyword or clear the category filter.
+      Try a different keyword.
     </div>
   </div>
 </section>
@@ -56,37 +54,16 @@
 <script>
   FT.initPage('plugins');
 
-  // Build category chips
-  const chipsEl = document.getElementById('catalog-chips');
-  const chipNames = ['All', ...CATEGORIES];
-  let activeCat = 'All';
   let query = '';
-
-  function renderChips() {
-    chipsEl.innerHTML = chipNames.map(name =>
-      `<button class="chip ${name === activeCat ? 'active' : ''}" data-cat="${name}">${name}</button>`
-    ).join('');
-    chipsEl.querySelectorAll('.chip').forEach(btn => {
-      btn.addEventListener('click', () => {
-        activeCat = btn.dataset.cat;
-        renderChips();
-        renderGrid();
-      });
-    });
-  }
 
   function filterPlugins() {
     const q = query.trim().toLowerCase();
-    return PLUGINS.filter(p => {
-      if (activeCat !== 'All' && p.category !== activeCat) return false;
-      if (!q) return true;
-      return (
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tagline.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-      );
-    });
+    if (!q) return PLUGINS;
+    return PLUGINS.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.tagline.toLowerCase().includes(q)
+    );
   }
 
   function renderGrid() {
@@ -109,7 +86,6 @@
     renderGrid();
   });
 
-  renderChips();
   renderGrid();
 </script>
 </body>
